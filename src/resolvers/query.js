@@ -15,7 +15,7 @@ const Query = {
   notes: async (parent, args, { prisma }) => {
     return prisma.note.findMany({
       include: { author: true },
-      orderedBy: { created: 'desc' },
+      orderBy: { created: 'desc' },
       take: 50
     });
   },
