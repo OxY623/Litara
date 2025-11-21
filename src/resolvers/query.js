@@ -13,13 +13,11 @@ const Query = {
   },
 
   notes: async (parent, args, { prisma }) => {
-    return prisma.note
-      .findMany({
-        include: { author: true },
-        orderedBy: { created: 'desc' },
-        take: 50
-      })
-      .limit(100);
+    return prisma.note.findMany({
+      include: { author: true },
+      orderedBy: { created: 'desc' },
+      take: 50
+    });
   },
   note: async (parent, { id }, { prisma }) => {
     const note = await prisma.note.findUnique({
