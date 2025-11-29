@@ -65,7 +65,11 @@ const Mutation = {
       if (!user) {
         throw new AuthenticationError('You must be signedin to delete a note');
       }
-      const note = await prisma.note.findFirst({ where: id === args.id });
+      const note = await prisma.note.findFirst({
+        where: { id: args.id },
+        include: { author: true }
+      });
+
       if (note && user.id !== note.author.id) {
         throw new ForbiddenError(
           `You don't have permission to delete the note`
