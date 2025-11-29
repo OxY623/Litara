@@ -45,7 +45,7 @@ const Query = {
       notes = notes.slice(0, limit);
     }
 
-    const newCursor = notes.length > 0 ? notes[notes.length - 1].id : null;
+    const newCursor = notes.length > 0 ? notes[notes.length - 1].id : '';
 
     return {
       notes,

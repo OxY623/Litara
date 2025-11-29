@@ -14,7 +14,7 @@ const notes = [
     author: 'Раман Шупляк'
   }
 ];
-
+//delete tables db
 (async () => {
   try {
     // for (const note of notes) {

@@ -1,6 +1,6 @@
-import Query from './query.js';
-import Mutation from './mutation.js';
 import pkg from 'graphql-iso-date';
+import Mutation from './mutation.js';
+import Query from './query.js';
 const { GraphQLDateTime } = pkg;
 
 const User = {
@@ -9,7 +9,7 @@ const User = {
   },
   favorites: async (parent, args, { prisma }) => {
     return await prisma.note.findMany({
-      where: { favoriteBy: { some: { id: parent.id } } },
+      where: { favoritesBy: { some: { id: parent.id } } },
       orderBy: { id: 'asc' }
     });
   }

@@ -1,9 +1,8 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { AuthenticationError, ForbiddenError } from 'apollo-server-express';
+import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 import getGravatar from '../util/gravatar.js';
-import prisma from '../prismaClient.js';
 
 dotenv.config();
 
@@ -12,10 +11,10 @@ const jwtSecret = process.env.JWT_SECRET;
 const Mutation = {
   newNote: async (parent, args, { prisma, user }) => {
     if (!user) {
-      throw new AuthenticationError('You must be sighed in to create a note');
+      throw new AuthenticationError('You must be signed in to create a note');
     }
     const userExists = await prisma.user.findUnique({
-      where: { id: authorId }
+      where: { id: user.id }
     });
 
     if (!userExists) {
@@ -35,12 +34,22 @@ const Mutation = {
   },
   updateNote: async (parent, args, { prisma, user }) => {
     if (!user) {
-      throw new AuthenticationError('You must be sighed in to delete a note');
+      throw new AuthenticationError('You must be signed in to update a note');
     }
-    const note = await prisma.note.findFirst({ where: { id: args.id } });
-    if (note && user.id !== note.author.id) {
-      throw new ForbiddenError(`You don't have permission to update the note`);
+
+    const note = await prisma.note.findUnique({
+      where: { id: args.id },
+      include: { author: true }
+    });
+
+    if (!note) {
+      throw new Error('Note not found');
     }
+
+    if (user.id !== note.author.id) {
+      throw new ForbiddenError(`You don't have permission to update this note`);
+    }
+
     try {
       return await prisma.note.update({
         where: { id: args.id },
@@ -48,13 +57,13 @@ const Mutation = {
       });
     } catch (err) {
       console.error(err);
-      throw new Error('Note not found or invalid data');
+      throw new Error('Failed to update note');
     }
   },
   deleteNote: async (parent, args, { prisma, user }) => {
     try {
       if (!user) {
-        throw new AuthenticationError('You must be sighed in to delete a note');
+        throw new AuthenticationError('You must be signedin to delete a note');
       }
       const note = await prisma.note.findFirst({ where: id === args.id });
       if (note && user.id !== note.author.id) {
